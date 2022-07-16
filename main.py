@@ -22,7 +22,7 @@ HOUSE = pygame.image.load(".\Images\Terrain\house.png")
 default_creatures = pygame.sprite.Group()
 
 
-for total_creature_x in range(0,10):
+for total_creature_x in range(0,100):
     random_x = random.randint(10, WIDTH-30)
     random_y = random.randint(10, HEIGHT-30)
     spawnLocation = spawn_location_safe(random_x, random_y)
@@ -30,7 +30,6 @@ for total_creature_x in range(0,10):
         random_x = random.randint(10, WIDTH-30)
         random_y = random.randint(10, HEIGHT-30)
         spawnLocation = spawn_location_safe(random_x, random_y)
-
     creature = default_creature(random_x, random_y)
     default_creatures.add(creature)
     
