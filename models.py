@@ -1,15 +1,43 @@
-from email.policy import default
 import random
-from tkinter import Y
 import pygame
 import math
+from utili import bullet_in_bound
+
+WIDTH, HEIGHT = 1000, 750
+
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, mousex, mousey):
+        super().__init__()
+        self.posx, self.posy = WIDTH/2.1, HEIGHT/2
+        self.distance_x, self.distance_y = 0, 0 
+        self.SPEED = 25
+        self.in_bound = True
+        self.MOUSE_X = mousex 
+        self.MOUSE_Y = mousey
+        self.previous_x = self.posx
+        self.previous_y = self.posy
+        self.radians = math.atan2(self.MOUSE_Y - self.previous_y, self.MOUSE_X - self.previous_x)
+    
+    def shoot(self, win):
+        self.distance_x = math.cos(self.radians)*self.SPEED
+        self.distance_y = math.sin(self.radians)*self.SPEED
+        
+        if (self.in_bound):
+            self.posx += self.distance_x
+            self.posy += self.distance_y
+            self.bullet_image = pygame.draw.circle(win, (179, 61, 55), [self.posx, self.posy], 4, 0)
+            self.in_bound = bullet_in_bound(self.posx, self.posy)
+        
+        if(not self.in_bound):
+            self.kill()
+            self.remove()
+
 
 class CreatureEntity(pygame.sprite.Sprite):
-    def __init__(self, x, y, creatureType):
+    def __init__(self, x, y, creatureType, walking_speed, crawl_out_speed):
         super().__init__()
         self.posx = x
         self.posy = y
-        self.health = 20
         self.is_crawl_animation = True
         self.is_walk_animation = False
         self.sprites_crawl = []
@@ -21,10 +49,15 @@ class CreatureEntity(pygame.sprite.Sprite):
         self.walk_speed = 1
         self.STARTING_X, self.STARTING_Y = self.posx, self.posy
         self.distance = 0
+        self.SPEED = walking_speed
+        self.CRAWL_OUT_SPEED = crawl_out_speed
+
+    def bullet_hit(self):
+        pass        
         
     def crawl_out(self):
         if (self.is_crawl_animation == True):
-            self.current_sprite += random.random() * 0.15
+            self.current_sprite += random.random() * self.CRAWL_OUT_SPEED
             if (int(self.current_sprite) >= len(self.sprites_crawl)):
                 self.current_sprite = len(self.sprites_crawl)-1
                 self.current_sprite = 0
@@ -34,23 +67,7 @@ class CreatureEntity(pygame.sprite.Sprite):
         self.image = self.sprites_crawl[int(self.current_sprite)]
         return self.is_walk_animation
     
-    """
-    NOTE: How we're going to be making the sprites move to a set x,y point in the map
-    - 'x' is going to be using cos(radians)
-    - 'y' is going to be using sin(radians)
-    - 'distance (d)' to find how much longer until we have reached where we need to go
-    """
-    def walking(self, speed = 1.0):
-        """
-        Walking animation for creature entity
-        
-        Parameters
-        ----------
-        `speed : float, default 1.0`
-            set the speed of the default_creature movement.
-        """
-        WIDTH, HEIGHT = 1000, 750
-        self.SPEED = speed
+    def walking(self):
         self.previous_x, self.previous_y = self.STARTING_X, self.STARTING_Y
         self.distance_x, self.distance_y = 0, 0
         
@@ -77,6 +94,7 @@ class CreatureEntity(pygame.sprite.Sprite):
         
         if (self.distance == 0):
             self.kill()
+            self.remove()
             
     def __load_images(self, creatureType):
         """
@@ -104,15 +122,18 @@ class CreatureEntity(pygame.sprite.Sprite):
 
 class DefaultCreature(CreatureEntity):
     def __init__(self, x, y):
-        super().__init__(x, y, "default_creature")
+        super().__init__(x, y, "DefaultCreature", 0.5, 0.2)
+        self.health = 25
+        
 
-# class TankCreature(CreatureEntity):
-#     def __init__(self, x, y):
-#         super().__init__(x, y, "tank_creature")
+class TankCreature(CreatureEntity):
+    def __init__(self, x, y):
+        super().__init__(x, y, "TankCreature", 0.25, 0.08)
+        self.health = 100
     
-# class ScreecherCreature(CreatureEntity):
-#     def __init__(self, x, y):
-#         super().__init__(x, y, "screecher_creature")
+class ScreecherCreature(CreatureEntity):
+    def __init__(self, x, y):
+        super().__init__(x, y, "ScreecherCreature", 0.75, 0.5)
 
 
     
