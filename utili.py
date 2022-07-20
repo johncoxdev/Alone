@@ -22,13 +22,16 @@ def spawn_wave(creatureList, ARENA_WIDTH, ARENA_HEIGHT):
             random_y = randint(10, ARENA_HEIGHT-30)
             spawn_location = spawn_location_safe(random_x, random_y)
             
-        random_creature = choice([DefaultCreature(random_x, random_y), TankCreature(random_x, random_y), ScreecherCreature(random_x, random_y)])
-        
+        random_creature = choice([
+            DefaultCreature(random_x, random_y, ARENA_WIDTH, ARENA_HEIGHT),
+            TankCreature(random_x, random_y, ARENA_WIDTH, ARENA_HEIGHT),
+            ScreecherCreature(random_x, random_y, ARENA_WIDTH, ARENA_HEIGHT)
+        ])
         creatureList.add(random_creature)
     return creatureList   
 
-def create_bullet(mousex, mousey, bullets):
-    bullet = Bullet(mousex, mousey, 10)
+def create_bullet(mousex, mousey, ARENA_WIDTH, ARENA_HEIGHT, bullets):
+    bullet = Bullet(mousex, mousey, 10, ARENA_WIDTH, ARENA_HEIGHT)
     bullets.add(bullet)
     return bullets
         

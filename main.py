@@ -1,7 +1,6 @@
 import random
 import sys
 import pygame
-# from models import DefaultCreature, TankCreature, ScreecherCreature, Bullet
 from utili import spawn_wave, create_bullet
 
 pygame.init()
@@ -50,7 +49,7 @@ while game_active:
     """
     if mouse[0]:
         mousex, mousey = pygame.mouse.get_pos()
-        bullets = create_bullet(mousex, mousey, bullets)
+        bullets = create_bullet(mousex, mousey, ARENA_WIDTH, ARENA_HEIGHT, bullets)
         
     for bullet in bullets:
         bullet.shoot(SCREEN)
