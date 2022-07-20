@@ -1,9 +1,10 @@
 import random
 import pygame
 import math
-from utili import bullet_in_bound
+# from utili import bullet_in_bound
 
-WIDTH, HEIGHT = 1000, 750
+WIDTH, HEIGHT = 1000, 850
+ARENA_WIDTH, ARENA_HEIGHT = WIDTH, HEIGHT - 100
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, mousex, mousey, speed) -> None:
@@ -20,6 +21,11 @@ class Bullet(pygame.sprite.Sprite):
         self.radians = math.atan2(self.MOUSE_Y - self.previous_y, self.MOUSE_X - self.previous_x)
         self.rect = None
     
+    def bullet_in_bound(self, posx, posy, WIDTH, HEIGHT):
+        if ((posx <= 0 or posx >= WIDTH) or (posy <= 0 or posy >= HEIGHT)):
+            return False
+        return True
+    
     def shoot(self, win):
         self.distance_x = math.cos(self.radians)*self.SPEED
         self.distance_y = math.sin(self.radians)*self.SPEED
@@ -28,11 +34,10 @@ class Bullet(pygame.sprite.Sprite):
             self.posx += self.distance_x
             self.posy += self.distance_y
             self.rect = pygame.draw.circle(win, (179, 61, 55), [self.posx, self.posy], 4, 0)
-            self.in_bound = bullet_in_bound(self.posx, self.posy)
+            self.in_bound = self.bullet_in_bound(self.posx, self.posy, ARENA_WIDTH, ARENA_HEIGHT)
         
         if(not self.in_bound):
             self.kill()
-            self.remove()
 
 
 class CreatureEntity(pygame.sprite.Sprite):
