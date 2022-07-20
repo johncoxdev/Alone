@@ -6,17 +6,19 @@ from utili import bullet_in_bound
 WIDTH, HEIGHT = 1000, 750
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, mousex, mousey):
+    def __init__(self, mousex, mousey, speed) -> None:
         super().__init__()
+        pygame.sprite.Sprite.__init__(self)
         self.posx, self.posy = WIDTH/2.1, HEIGHT/2
         self.distance_x, self.distance_y = 0, 0 
-        self.SPEED = 25
+        self.SPEED = speed
         self.in_bound = True
         self.MOUSE_X = mousex 
         self.MOUSE_Y = mousey
         self.previous_x = self.posx
         self.previous_y = self.posy
         self.radians = math.atan2(self.MOUSE_Y - self.previous_y, self.MOUSE_X - self.previous_x)
+        self.rect = None
     
     def shoot(self, win):
         self.distance_x = math.cos(self.radians)*self.SPEED
@@ -25,7 +27,7 @@ class Bullet(pygame.sprite.Sprite):
         if (self.in_bound):
             self.posx += self.distance_x
             self.posy += self.distance_y
-            self.bullet_image = pygame.draw.circle(win, (179, 61, 55), [self.posx, self.posy], 4, 0)
+            self.rect = pygame.draw.circle(win, (179, 61, 55), [self.posx, self.posy], 4, 0)
             self.in_bound = bullet_in_bound(self.posx, self.posy)
         
         if(not self.in_bound):
@@ -50,10 +52,7 @@ class CreatureEntity(pygame.sprite.Sprite):
         self.STARTING_X, self.STARTING_Y = self.posx, self.posy
         self.distance = 0
         self.SPEED = walking_speed
-        self.CRAWL_OUT_SPEED = crawl_out_speed
-
-    def bullet_hit(self):
-        pass        
+        self.CRAWL_OUT_SPEED = crawl_out_speed     
         
     def crawl_out(self):
         if (self.is_crawl_animation == True):
@@ -68,6 +67,7 @@ class CreatureEntity(pygame.sprite.Sprite):
         return self.is_walk_animation
     
     def walking(self):
+        
         self.previous_x, self.previous_y = self.STARTING_X, self.STARTING_Y
         self.distance_x, self.distance_y = 0, 0
         

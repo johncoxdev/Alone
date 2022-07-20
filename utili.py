@@ -1,3 +1,6 @@
+from turtle import pos
+
+
 WIDTH, HEIGHT = 1000, 750
 
 def spawn_location_safe(locx, locy):
@@ -6,6 +9,6 @@ def spawn_location_safe(locx, locy):
     return True
 
 def bullet_in_bound(posx, posy):
-    if ((posx <= 0 or posx >= WIDTH) and (posy <= 0 or posy >= HEIGHT)):
+    if ((posx <= 0 or posx >= WIDTH) or (posy <= 0 or posy >= HEIGHT)):
         return False
     return True
