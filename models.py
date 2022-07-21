@@ -139,6 +139,3 @@ class TankCreature(CreatureEntity):
 class ScreecherCreature(CreatureEntity):
     def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT):
         super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "ScreecherCreature", 0.75, 0.5)
-
-
-    

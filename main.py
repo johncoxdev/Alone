@@ -57,7 +57,6 @@ while game_active:
         if collision:
             bullet.kill()
             bullet.remove(bullets)
-    print(bullets)
     
     for default_creature in creatureList:
         default_creature.draw(SCREEN)
