@@ -1,11 +1,10 @@
 import random
 import pygame
-import math
+import math       
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, mousex, mousey, speed, ARENA_WIDTH, ARENA_HEIGHT) -> None:
         super().__init__()
-        pygame.sprite.Sprite.__init__(self)
         self.ARENA_WIDTH = ARENA_WIDTH
         self.ARENA_HEIGHT = ARENA_HEIGHT
         self.posx, self.posy = self.ARENA_WIDTH/2.1, self.ARENA_HEIGHT/2
@@ -18,6 +17,7 @@ class Bullet(pygame.sprite.Sprite):
         self.previous_y = self.posy
         self.radians = math.atan2(self.MOUSE_Y - self.previous_y, self.MOUSE_X - self.previous_x)
         self.rect = None
+        self.radius = 15
         self.ARENA_WIDTH = ARENA_WIDTH
         self.ARENA_HEIGHT = ARENA_HEIGHT
     
@@ -38,24 +38,25 @@ class Bullet(pygame.sprite.Sprite):
         
         if(not self.in_bound):
             self.kill()
+            self.remove()
 
 
 class CreatureEntity(pygame.sprite.Sprite):
-    def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT, creatureType, walking_speed, crawl_out_speed):
+    def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT, creatureType, health, walking_speed, crawl_out_speed):
         super().__init__()
         self.posx = x
         self.posy = y
+        self.radius = 15
+        self.health = health
         self.is_crawl_animation = True
         self.is_walk_animation = False
         self.sprites_crawl = []
         self.__load_images(creatureType)
         self.current_sprite = 0
         self.image = self.sprites_crawl[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.topleft = [self.posx,self.posy]
+        self.rect = self.image.get_rect(center = (self.posx, self.posy))
         self.walk_speed = 1
         self.distance = 0
-        self.starting_x, self.starting_y = self.posx, self.posy
         self.SPEED = walking_speed
         self.CRAWL_OUT_SPEED = crawl_out_speed     
         self.ARENA_WIDTH = ARENA_WIDTH
@@ -76,7 +77,7 @@ class CreatureEntity(pygame.sprite.Sprite):
     
     def walking(self):
         
-        self.previous_x, self.previous_y = self.starting_x, self.starting_y
+        self.previous_x, self.previous_y = self.posx, self.posy
         self.distance_x, self.distance_y = 0, 0
         
         self.GET_DESPAWNPOINT_X, self.GET_DESPAWNPOINT_Y = self.ARENA_WIDTH/2.1, self.ARENA_HEIGHT/2
@@ -91,8 +92,8 @@ class CreatureEntity(pygame.sprite.Sprite):
         self.previous_x, self.previous_y = self.GET_DESPAWNPOINT_X, self.GET_DESPAWNPOINT_Y
         if (self.distance != 0):
             self.distance -= 1
-            self.starting_x += self.distance_x
-            self.starting_y += self.distance_y
+            self.posx += self.distance_x
+            self.posy += self.distance_y
         
         if (self.is_walk_animation == True):
             self.current_sprite += random.random() * 0.35
@@ -100,9 +101,26 @@ class CreatureEntity(pygame.sprite.Sprite):
                 self.current_sprite = 0
             self.image = self.sprites_walk[int(self.current_sprite)]   
         
-        if (self.distance == 0):
+    def take_damage(self, creatureList):
+        self.health -= 1
+        if (self.health == 0):
+            self.kill()
+            self.remove(creatureList)
+            return True
+        return False
+    
+    def if_reached_middle(self):
+        if (self.distance == 1):
             self.kill()
             self.remove()
+            return True
+        return False
+    
+    def show_creature_health(self, win):
+        font = pygame.font.SysFont("comicsans", 17, False)
+        text = font.render(f"{self.health}", True, (255, 0, 0))
+        win.blit(text, (self.posx + 15, self.posy - 30))
+        
             
     def __load_images(self, creatureType):
         """
@@ -122,20 +140,20 @@ class CreatureEntity(pygame.sprite.Sprite):
         self.sprites_walk.append(pygame.image.load(f'.\Images\{creatureType}\walk3.png'))       
     
     def draw(self, win):
-        if (self.rect.topleft[0] > 500):
+        if (self.posx > 500):
             flipped_image = pygame.transform.flip(self.image, True, False)
-            return win.blit(flipped_image, (self.starting_x, self.starting_y))
-        win.blit(self.image, (self.starting_x, self.starting_y))
+            return win.blit(flipped_image, (self.posx, self.posy))
+        win.blit(self.image, (self.posx, self.posy))
 
 class DefaultCreature(CreatureEntity):
     def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT):
-        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "DefaultCreature", 0.5, 0.2)
+        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "DefaultCreature", 3,  0.5, 0.2)
         
 
 class TankCreature(CreatureEntity):
     def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT):
-        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "TankCreature", 0.25, 0.08)
+        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "TankCreature", 5, 0.25, 0.08)
     
 class ScreecherCreature(CreatureEntity):
     def __init__(self, x, y, ARENA_WIDTH, ARENA_HEIGHT):
-        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "ScreecherCreature", 0.75, 0.5)
+        super().__init__(x, y, ARENA_WIDTH, ARENA_HEIGHT, "ScreecherCreature", 1, 0.75, 0.5)
