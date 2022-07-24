@@ -16,7 +16,6 @@ clock = pygame.time.Clock()
 game_active = True
 creatureList = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
-gun_cooled = True
 counter = 15
 WAVENUMBER = 1
 pygame.time.set_timer(pygame.USEREVENT + 0, 1000)
