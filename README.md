@@ -12,7 +12,8 @@ Built with:
 Although this game was made for fun, this was the first real project made with the Pygame module. I learned how to 
 implement trigonometric function within my code to make different objects (in this case Sprites) to move within the
 game. I also learned about Sprites itself, and how to create an animation using them. I got a better understanding
-dealing with classes and object oriented programming.
+dealing with classes and object oriented programming. I also learned about rendering text and moving them within
+the game.
 
 ## How to Download & play
 
