@@ -47,6 +47,7 @@ def check_wave_count(counter, creatureList, ARENA_WIDTH, ARENA_HEIGHT):
     if (counter > 0 and counter < 15 and len(creatureList) == 0):
         spawn_wave(waveNumber, creatureList, ARENA_WIDTH, ARENA_HEIGHT)
         waveNumber += 1
+        counter = 15
         return counter
     if counter == 0:
         spawn_wave(waveNumber, creatureList, ARENA_WIDTH, ARENA_HEIGHT)
